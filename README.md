@@ -2,8 +2,6 @@
 
 ## Analyse d'anomalies dans la forêt primaire à partir d'images satellite radar
 
-
-
 Dans le cadre d'un projet de collaboration avec Alliance of Bioversity International and CIAT, on développe des outils exploitant des algorithmes de Machine Learning pour traiter des informations fournies par des capteurs de télédétection (e.g. par des satellites), avec l'objectif de détecter la déforestation et surveiller les changements dans l'utilisation des sols.
 Dans le cadre de ce projet, nous avons l'objectif de traiter des images fournies par les satellites Sentinel-1 de l'Agence Spatial Européenne (ESA). Ces satellites transportent un instrument radar qui permet de recueillir des données par tous les temps, de jour comme de nuit. Or, l'utilisation de ces données reste pas évident pour les non-experts du domaine et nécessite d'un pré-traitement lourd et chronophage.
 
@@ -20,3 +18,10 @@ Ce projet se déroule sur deux phases. Dans une première phase, nous allons ét
 4. Acquérir et pré-traiter des images satellite radar (Sentinel-1) pour étudier l'évolution de la végétation en utilisant plusieurs images d'une même zone mais correspondantes à des temps différents.
 
 5. Développer des outils de visualisation de cartes d'anomalies facilitant l'exploration des résultats obtenus à partir de l'application des modèles.
+
+## Utilisation
+
+1. Installer un envirronement python 3.6 avec les dépendances nécessaires (liste dans le dossier "setup")
+2. Installer python snappy. (https://step.esa.int/main/download/snap-download/)
+3. Mettre à jour le fichier main_config dans le dossier "config"
+4. ...
