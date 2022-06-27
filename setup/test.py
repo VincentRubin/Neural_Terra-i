@@ -6,6 +6,8 @@ settings = configparser.ConfigParser()
 
 import sys
 
+sys.path.append("/home/vincent.rubin/data-local/Neural_Terra-i/Neural_Terra-i/snap-python")
+
 from osgeo import gdal,ogr, osr
 gdal.UseExceptions()
 ogr.UseExceptions()
