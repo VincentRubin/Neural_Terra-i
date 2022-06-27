@@ -1,4 +1,4 @@
-Liste des dépendances python :
+List of python dependencies (PYTHON 3.6) :
 
 sentinelsat
 glob
@@ -13,7 +13,9 @@ pytest-shutil
 base conda
 matplotlib
 
-Scripts :
+Install the dependencies with the script conda_install_needs.bat or create a new conda environment with the file conda_environment.yml.
 
-	Windows : In a command line prompt, activate the wanted conda env then start the .bat.
-		  Neural_Terra-i work with Python 3.6)
+Scripts : Windows : In a command line prompt, activate the wanted conda env then start the .bat. 
+	  (Neural_Terra-i work with Python 3.6)
+
+Use the yml file : conda env create -f conda_environment.yml

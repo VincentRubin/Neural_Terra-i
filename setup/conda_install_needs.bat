@@ -1,13 +1,15 @@
 echo y | conda update -n base conda
 echo y | conda install -c conda-forge sentinelsat
-echo y | conda install -c conda-forge glob
+echo y | conda install -c conda-forge glob2
 echo y | conda install -c anaconda zipfile36
 echo y | conda install -c conda-forge gdal
 echo y | conda install -c conda-forge rasterio
 echo y | conda install -c conda-forge fiona
 echo y | conda install -c conda-forge geojson
-echo y | conda install -c conda-forge glob2
 echo y | conda install -c anaconda numpy
 echo y | conda install -c conda-forge pytest-shutil
 echo y | conda update -n base conda
 echo y | conda install -c conda-forge matplotlib
+echo y | conda install -c conda-forge keras
+echo y | conda install -c conda-forge tensorflow
+echo y | conda install -c anaconda scikit-learn
