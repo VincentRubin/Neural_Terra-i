@@ -3,19 +3,8 @@ currentPath = os.getcwd()
 
 import configparser
 settings = configparser.ConfigParser()
-settings._interpolation = configparser.ExtendedInterpolation()
-settings.read(currentPath + "/config/main_config.ini")
-
-libs_path = settings.get('Main-Config', 'libs')
-output_path = settings.get('Main-Config', 'output_path') + "/subset_start"
-
-subsetSizeX = int(settings.get('Main-Config', 'subsetSizeX'))
-subsetSizeY = int(settings.get('Main-Config', 'subsetSizeY'))
-marginX = int(settings.get('Main-Config', 'marginX'))
-marginY = int(settings.get('Main-Config', 'marginY'))
 
 import sys
-sys.path.append(libs_path)
 
 from osgeo import gdal,ogr, osr
 gdal.UseExceptions()
@@ -46,11 +35,41 @@ import geojson
 import random
 
 import array
-import numpy as np
 import itertools
 import matplotlib.pyplot as plt
 
 # https://stackoverflow.com/questions/24816237/ipython-notebook-clear-cell-output-in-code
 from IPython.display import clear_output
+
+GPF.getDefaultInstance().getOperatorSpiRegistry().loadOperatorSpis()
+HashMap = snappy.jpy.get_type('java.util.HashMap')
+
+System = jpy.get_type('java.lang.System')
+System.gc()
+
+PrintWriterProgressMonitor = jpy.get_type('com.bc.ceres.core.PrintWriterProgressMonitor')
+FileOutputStream = jpy.get_type('java.io.FileOutputStream')
+ProductData = jpy.get_type('org.esa.snap.core.datamodel.ProductData')
+Product = jpy.get_type('org.esa.snap.core.datamodel.Product')
+GeoPos = jpy.get_type('org.esa.snap.core.datamodel.GeoPos')
+PixelPos = jpy.get_type('org.esa.snap.core.datamodel.PixelPos')
+
+from keras.datasets import mnist
+from keras.models import Model
+from keras.layers.core import Dense, Dropout, Flatten
+#from tensorflow.keras.optimizers import RMSprop
+from keras.utils import np_utils
+from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D
+from keras.layers import Input, BatchNormalization
+from sklearn import metrics as me
+from scipy import stats
+from keras import models
+from keras import layers
+from sklearn.preprocessing import Normalizer
+
+import tensorflow as tf
+
+folderStart = "K:/TM/data_output/subset_start"
+folderResult = "K:/TM/data_output/subset_rotated"
 
 print("IT WORKS !")
