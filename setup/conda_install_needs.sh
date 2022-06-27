@@ -1,6 +1,4 @@
 #!/usr/bin
-conda create -n python36 python=3.6.13
-conda activate python36
 yes | conda update -n base conda
 yes | conda install -c conda-forge sentinelsat
 yes | conda install -c conda-forge glob2
