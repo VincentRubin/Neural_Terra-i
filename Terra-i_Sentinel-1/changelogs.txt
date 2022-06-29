@@ -1,0 +1,19 @@
+Change
+
+28.03.2022
+	Changed GetTerrainCorrection to skip step 5 Mosaïc.
+
+29.03.2022
+	Added function "DoFullPreProcess" who make (steps 1+2+3+4+6) and only save on last step.
+	
+	Changes steps so we don't need to write on disk after each of them.
+	We can now pass the products as parameters (Use None as value for products to keep using old system).
+		!!!! Don't Work => RuntimeError: org.esa.snap.core.gpf.OperatorException: Input should be a SAR product !!!!
+		Use old system for now
+	
+	Added time measures for processing and writing (separately).
+	Added two global variables :
+		processTimeInFunction = None	# Used to measure the time needed to processing the data in a function
+		writeTimeInFunction = None		# Used to measure the time needed to write the data in a function
+	
+	
