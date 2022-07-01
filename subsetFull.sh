@@ -1,7 +1,7 @@
 #!/usr/bin
 PRODUCT_INDEX=$3
 
-while [PRODUCT_INDEX -gt -1]
+while [$PRODUCT_INDEX -gt -1]
 do
 	echo ".................................................."
 	echo "CURRENT PRODUCT : " + $PRODUCT_INDEX

@@ -50,9 +50,6 @@ import numpy as np
 import itertools
 import matplotlib.pyplot as plt
 
-# https://stackoverflow.com/questions/24816237/ipython-notebook-clear-cell-output-in-code
-from IPython.display import clear_output
-
 outFormat = 'ESRI Shapefile'
 
 GPF.getDefaultInstance().getOperatorSpiRegistry().loadOperatorSpis()

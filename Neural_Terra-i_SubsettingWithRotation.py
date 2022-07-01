@@ -7,7 +7,7 @@ settings._interpolation = configparser.ExtendedInterpolation()
 settings.read(currentPath + "/config/main_config.ini")
 
 libs_path = settings.get('Main-Config', 'libs')
-output_path = settings.get('Main-Config', 'output_path') + "/subset_rotated2"
+output_path = settings.get('Main-Config', 'output_path') + "/subset_end"
 
 subsetSizeX = int(settings.get('Main-Config', 'subsetSizeX'))
 subsetSizeY = int(settings.get('Main-Config', 'subsetSizeY'))
@@ -49,9 +49,6 @@ import array
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
-
-# https://stackoverflow.com/questions/24816237/ipython-notebook-clear-cell-output-in-code
-from IPython.display import clear_output
 
 outFormat = 'ESRI Shapefile'
 
