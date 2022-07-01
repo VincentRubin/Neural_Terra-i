@@ -68,6 +68,11 @@ Product = jpy.get_type('org.esa.snap.core.datamodel.Product')
 GeoPos = jpy.get_type('org.esa.snap.core.datamodel.GeoPos')
 PixelPos = jpy.get_type('org.esa.snap.core.datamodel.PixelPos')
 
+bandNamesC = []
+bandNamesC.append("Amplitude_VH")
+bandNamesC.append("Amplitude_VV")
+bandNamesC.append("elevation")
+
 def createFolder(LocalityPath):
     if not os.path.exists(LocalityPath):
         os.makedirs(LocalityPath)
@@ -162,9 +167,11 @@ def subsettingWriteAsArray(product, limit):
 			
                 if os.path.exists(output_path + "/" + str(productName) + "_" + str(subsetPosX) + "_" + str(subsetPosY) + ".npz"):
                     break
+					
+				if band.getName() in bandNamesC:
         
-                channels.append(array.array('f', (float("NaN") for i in range(0, subsetSize)))) # int : i, float : f
-                band.readPixels(startX, startY, subsetSizeX, subsetSizeY, channels[-1])
+					channels.append(array.array('f', (float("NaN") for i in range(0, subsetSize)))) # int : i, float : f
+					band.readPixels(startX, startY, subsetSizeX, subsetSizeY, channels[-1])
 				
             for grid in product.getTiePointGrids():
 			
@@ -231,6 +238,8 @@ if productIndex < 0 :
 	sys.exit(0)
 
 product = getProductDim(pathFile, productIndex)
+
+print(product.getBandNames())
 
 result = subsettingWriteAsArray(product, limit)
 
