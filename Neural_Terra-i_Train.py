@@ -141,19 +141,19 @@ for x_ in subsetStarts:
 
 del subsetStarts
 
-#nbTrain = int(len(X) * 0.80)
+nbTrain = int(len(X) * 0.70)
 
-#X_trainL = X[:nbTrain]
-#Y_trainL = Y[:nbTrain]
+X_trainL = X[:nbTrain]
+Y_trainL = Y[:nbTrain]
 
-#X_testL = X[nbTrain:]
-#Y_testL = Y[nbTrain:]
+X_testL = X[nbTrain:]
+Y_testL = Y[nbTrain:]
 
-X_trainL = X[:10000]
-Y_trainL = Y[:10000]
+#X_trainL = X[:10000]
+#Y_trainL = Y[:10000]
 
-X_testL = X[10000:12000]
-Y_testL = Y[10000:12000]
+#X_testL = X[10000:12000]
+#Y_testL = Y[10000:12000]
 
 del X
 del Y
@@ -232,7 +232,7 @@ model.summary()
 # Train model
 
 batch_size = 1024
-n_epoch = 1
+n_epoch = 100
 
 #model.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 model.compile(loss='mean_absolute_percentage_error', optimizer='RMSprop', metrics=['mean_absolute_percentage_error'])
