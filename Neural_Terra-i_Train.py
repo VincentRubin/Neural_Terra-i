@@ -8,10 +8,10 @@ settings.read(currentPath + "/config/main_config.ini")
 
 libs_path = settings.get('Main-Config', 'libs')
 
-folderStart = int(settings.get('Main-Config', 'subset_start_path'))
-folderResult = int(settings.get('Main-Config', 'subset_end_path'))
-bandTrained = int(settings.get('Main-Config', 'band_trained'))
-historyModelPath = int(settings.get('Main-Config', 'history_model_path'))
+folderStart = settings.get('Main-Config', 'subset_start_path')
+folderResult = settings.get('Main-Config', 'subset_end_path')
+bandTrained = settings.get('Main-Config', 'band_trained')
+historyModelPath = settings.get('Main-Config', 'history_model_path')
 
 import sys
 sys.path.append(libs_path)
@@ -114,6 +114,8 @@ def getProductFileList(path, search):
 
     return files
 
+print("LOADING DATA...")
+
 subsetStarts = getProductList(folderStart, '*.npz')
 
 if bandTrained == "VV":
@@ -183,8 +185,8 @@ X_test = np.swapaxes(X_test, 2, 3)
 
 # Reshape Y from (nbSamples, xSize, ySize) to (nbSamples, xSize, ySize, 1)
 
-Y_train = Y_train.reshape(len(Y_train), len(Y_train[0], len(Y_train[0][0], 1).astype('float32')
-Y_test = Y_test.reshape(len(Y_test), len(Y_test[0], len(Y_test[0][0], 1).astype('float32')
+Y_train = Y_train.reshape(len(Y_train), len(Y_train[0]), len(Y_train[0][0]), 1).astype('float32')
+Y_test = Y_test.reshape(len(Y_test), len(Y_test[0]), len(Y_test[0][0]), 1).astype('float32')
 
 # Create model
 
@@ -220,13 +222,15 @@ l5 = Conv2D(1, (5, 5), padding='same', activation='relu', name='l5')(l45_mp)
 
 #l5 = Dense(n_classes, activation='softmax', name='l5')(l4)
 
+print("TRAINING START...")
+
 model = Model(inputs=l0, outputs=l5)
 model.summary()
 
 # Train model
 
 batch_size = 1024
-n_epoch = 10
+n_epoch = 3
 
 #model.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 model.compile(loss='mean_absolute_percentage_error', optimizer='RMSprop', metrics=['mean_absolute_percentage_error'])
