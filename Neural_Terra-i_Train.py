@@ -83,29 +83,50 @@ import tensorflow as tf
 
 def getProductList(path, search):
 
-    #products = []
     products = []
 
     lbs_input_path = os.path.join(path, search)
     files = glob.glob(lbs_input_path)
 
+    nbFiles = len(files)
+    nbFilesDone = 0
+
     for f in files:
+        print("LOADING DATA - X : " + str(nbFilesDone) + "/" + str(nbFiles) + " - (" + str("{:.2f}".format(nbFilesDone / nbFiles * 100)) + "%)")
+
         temp = np.load(f)
         products.append(temp['arr_0'])
 
+        nbFilesDone += 1
+        print("\033[A\033[A")
+
+    print("LOADING DATA - X : " + str(nbFilesDone) + "/" + str(nbFiles) + " - (" + str("{:.2f}".format(nbFilesDone / nbFiles * 100)) + "%)")
+
     return products
 
-def getProductList2(path, search): #TEMP
+def getProductList2(path, search):
 
     products = []
 
-    for pathF in os.listdir(path):
+    folders = os.listdir(path)
+
+    nbFiles = len(folders)
+    nbFilesDone = 0
+
+    for pathF in folders:
+
+        print("LOADING DATA - Y : " + str(nbFilesDone) + "/" + str(nbFiles) + " - (" + str("{:.2f}".format(nbFilesDone / nbFiles * 100)) + "%)")
 
         for pathF2 in os.listdir(path + "/" + pathF):
 
             if search in pathF2:
                 temp = np.load(path + "/" + pathF + "/" + pathF2)
                 products.append(temp['arr_0'])
+
+        nbFilesDone += 1
+        print("\033[A\033[A")
+
+    print("LOADING DATA - Y : " + str(nbFilesDone) + "/" + str(nbFiles) + " - (" + str("{:.2f}".format(nbFilesDone / nbFiles * 100)) + "%)")
 
     return products
 
@@ -116,7 +137,6 @@ def getProductFileList(path, search):
 
     return files
 print("-------------------------------------------")
-print("LOADING DATA...")
 
 subsetStarts = getProductList(folderStart, '*.npz')
 
@@ -141,6 +161,8 @@ for x_ in subsetStarts:
 
 del subsetStarts
 
+print("PREPARING DATA...")
+
 nbTrain = int(len(X) * 0.70)
 
 X_trainL = X[:nbTrain]
@@ -158,10 +180,10 @@ Y_testL = Y[nbTrain:]
 del X
 del Y
 
-print("X_trainL : " + str(len(X_trainL)))
-print("Y_trainL : " + str(len(Y_trainL)))
-print("X_testL : " + str(len(X_testL)))
-print("Y_testL : " + str(len(Y_testL)))
+print("X_train : " + str(len(X_trainL)))
+print("Y_train : " + str(len(Y_trainL)))
+print("X_test : " + str(len(X_testL)))
+print("Y_test : " + str(len(Y_testL)))
 
 # Convert list in numpy.array
 
@@ -232,7 +254,7 @@ model.summary()
 # Train model
 
 batch_size = 1024
-n_epoch = 100
+n_epoch = 1
 
 #model.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 model.compile(loss='mean_absolute_percentage_error', optimizer='RMSprop', metrics=['mean_absolute_percentage_error'])

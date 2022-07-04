@@ -1,0 +1,1 @@
+start /WAIT /b python Neural_Terra-i_Train.py
