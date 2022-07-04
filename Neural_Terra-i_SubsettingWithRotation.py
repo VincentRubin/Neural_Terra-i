@@ -390,4 +390,13 @@ if result == True:
 		f.truncate(0)
 		f.write(str(bandIndex + 1))
 		f.close()
-		
+else:
+    f = open("product.txt", "a")
+    f.truncate(0)
+    f.write(str(productIndex))
+    f.close()
+	
+    f = open("band.txt", "a")
+    f.truncate(0)
+    f.write(str(bandIndex))
+    f.close()

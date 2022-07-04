@@ -1,4 +1,4 @@
-#!/usr/bin
+#!/bin/bash
 PRODUCT_INDEX=$3
 
 while [$PRODUCT_INDEX -gt -1]
