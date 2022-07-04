@@ -49,6 +49,8 @@ import numpy as np
 import itertools
 import matplotlib.pyplot as plt
 
+import pandas as pd
+
 outFormat = 'ESRI Shapefile'
 
 GPF.getDefaultInstance().getOperatorSpiRegistry().loadOperatorSpis()
@@ -113,7 +115,7 @@ def getProductFileList(path, search):
     files = glob.glob(lbs_input_path)
 
     return files
-
+print("-------------------------------------------")
 print("LOADING DATA...")
 
 subsetStarts = getProductList(folderStart, '*.npz')
@@ -230,12 +232,15 @@ model.summary()
 # Train model
 
 batch_size = 1024
-n_epoch = 3
+n_epoch = 1
 
 #model.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
 model.compile(loss='mean_absolute_percentage_error', optimizer='RMSprop', metrics=['mean_absolute_percentage_error'])
-history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=n_epoch, verbose=1, validation_data=(X_test, Y_test))
+history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=n_epoch, verbose=1, validation_data=(X_test, Y_test), use_multiprocessing=True)
+
+f = open(historyModelPath + "/history.csv", "w+")
+f.close()
 
 # Save history and model
-json.dump(history.history, open(historyModelPath + "/history", 'w'))
+pd.DataFrame.from_dict(history.history).to_csv(historyModelPath + "/history.csv", index=False)
 model.save(historyModelPath + "/model.h5")

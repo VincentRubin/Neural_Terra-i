@@ -75,29 +75,29 @@ def createFolder(LocalityPath):
         os.makedirs(LocalityPath)
 
 def getProductDim(path, index):
-	
+
 	pathInput = os.path.join(path,'*.dim')
 	files = glob.glob(pathInput)
-	
+
 	if len(files) == 0:
 		print("No product found")
-		
+
 		f = open("product.txt", "a")
 		f.truncate(0)
 		f.write(str(-1))
 		f.close()
-		
+
 		sys.exit(0)
-		
+
 	if index >= len(files):
-		
+
 		print("Subsetting Finished")
-		
+
 		f = open("product.txt", "a")
 		f.truncate(0)
 		f.write(str(-1))
 		f.close()
-		
+
 		sys.exit(0)
 
 	return ProductIO.readProduct(files[index])
@@ -111,11 +111,11 @@ def getProductList():
     return productList
 
 def getProductListDim(paths):
-    
+
     products = []
-    
+
     for path in paths :
-        
+
         lbs_input_path = os.path.join(path,'*.dim')
         files = glob.glob(lbs_input_path)
 
@@ -124,14 +124,14 @@ def getProductListDim(paths):
             products.append(product)
 
     return products
-	
+
 def subsettingWriteAsArray(product, limit):
-    
+
     print("subsettingWriteAsArray - START")
-    
+
     # Create buffer
     channels = []
-	
+
     productName = product.getName()
 
     w = product.getBands()[0].getRasterWidth()
@@ -145,55 +145,55 @@ def subsettingWriteAsArray(product, limit):
 
     subsetPosX = 0
     subsetPosY = 0
-    
+
     nbWrited = 0
-	
+
     subsetSize = subsetSizeX * subsetSizeY
-	
+
     createFolder(output_path)
-	
+
     while(True):
 
         while(True):
-                     
+
             msg = "subsetting advancement : " + str(nbSubsetDone) + "/" + str(nbSubset) + " - (" + str("{:.2f}".format(nbSubsetDone / nbSubset * 100)) + "%)"
 
             print(msg)
 
             for band in product.getBands():
-			
+
                 if os.path.exists(output_path + "/" + str(productName) + "_" + str(subsetPosX) + "_" + str(subsetPosY) + ".npz"):
                     break
-					
+
 				if band.getName() in bandNamesC:
-        
+
 					channels.append(array.array('f', (float("NaN") for i in range(0, subsetSize)))) # int : i, float : f
 					band.readPixels(startX, startY, subsetSizeX, subsetSizeY, channels[-1])
-				
+
             for grid in product.getTiePointGrids():
-			
+
                 if os.path.exists(output_path + "/" + str(productName) + "_" + str(subsetPosX) + "_" + str(subsetPosY) + ".npz"):
                     break
-			
+
                 gridRaster = product.getRasterDataNode(grid.getName())
-			
+
                 channels.append(array.array('f', (float("NaN") for i in range(0, subsetSize)))) # int : i, float : f
-                gridRaster.readPixels(startX, startY, subsetSizeX, subsetSizeY, channels[-1])	
-            
+                gridRaster.readPixels(startX, startY, subsetSizeX, subsetSizeY, channels[-1])
+
             if not os.path.exists(output_path + "/" + str(productName) + "_" + str(subsetPosX) + "_" + str(subsetPosY) + ".npz"):
-                
+
                 for i in range(len(channels)):
                     channels[i] = np.array_split(channels[i], subsetSizeX)
-				
+
                 np.savez_compressed(output_path + "/" + str(productName) + "_" + str(subsetPosX) + "_" + str(subsetPosY), channels)
                 nbWrited += 1
-        
+
             channels.clear()
 
             startX += subsetSizeX
             subsetPosX += 1
             nbSubsetDone += 1
-			
+
             print("\033[A\033[A")
 
             if startX + subsetSizeX > w - marginX or nbWrited >= limit:
@@ -208,15 +208,15 @@ def subsettingWriteAsArray(product, limit):
             break
 
     del channels
-          
+
     print(msg)
-	
+
     print("subsettingWriteAsArray - END")
-	
+
     return nbSubset == nbSubsetDone - 1
 
 if len(sys.argv) < 3 :
-	
+
 	print("You need to precise : path_to_file, limit, product index and band index (Ex : python script.py path 100 0)")
 	sys.exit(0)
 
@@ -225,12 +225,12 @@ limit = int(sys.argv[2])
 productIndex = int(sys.argv[3])
 
 if limit < 1 :
-	
+
 	print("Limit must be greater than 0")
 	sys.exit(0)
-	
+
 if productIndex < 0 :
-	
+
 	print("Product index must be greater or equal 0")
 	sys.exit(0)
 
@@ -243,7 +243,7 @@ result = subsettingWriteAsArray(product, limit)
 f = open("product.txt", "a")
 f.truncate(0)
 
-if result == True: 
+if result == True:
     f.write(str(productIndex + 1))
 else:
     f.write(str(productIndex))
