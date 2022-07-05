@@ -6,43 +6,14 @@ settings = configparser.ConfigParser()
 settings._interpolation = configparser.ExtendedInterpolation()
 settings.read(currentPath + "/config/main_config.ini")
 
-libs_path = settings.get('Main-Config', 'libs')
-
 folderStart = settings.get('Main-Config', 'subset_start_path')
 folderResult = settings.get('Main-Config', 'subset_end_path')
 bandTrained = settings.get('Main-Config', 'band_trained')
 historyModelPath = settings.get('Main-Config', 'history_model_path')
 
-import sys
-sys.path.append(libs_path)
-
-from osgeo import gdal,ogr, osr
-gdal.UseExceptions()
-ogr.UseExceptions()
-osr.UseExceptions()
-
-import snappy
-from snappy import ProductIO
-from snappy import HashMap
-from snappy import GPF
-from snappy import jpy
-
-import os
-import os.path
-from collections import OrderedDict
-from datetime import datetime
-import datetime
-from datetime import timedelta, date
-import time
-
 import numpy as np
 import glob
 from itertools import cycle
-import math
-import shutil
-import json
-import geojson
-import random
 
 import array
 import numpy as np
@@ -50,21 +21,6 @@ import itertools
 import matplotlib.pyplot as plt
 
 import pandas as pd
-
-outFormat = 'ESRI Shapefile'
-
-GPF.getDefaultInstance().getOperatorSpiRegistry().loadOperatorSpis()
-HashMap = snappy.jpy.get_type('java.util.HashMap')
-
-System = jpy.get_type('java.lang.System')
-System.gc()
-
-PrintWriterProgressMonitor = jpy.get_type('com.bc.ceres.core.PrintWriterProgressMonitor')
-FileOutputStream = jpy.get_type('java.io.FileOutputStream')
-ProductData = jpy.get_type('org.esa.snap.core.datamodel.ProductData')
-Product = jpy.get_type('org.esa.snap.core.datamodel.Product')
-GeoPos = jpy.get_type('org.esa.snap.core.datamodel.GeoPos')
-PixelPos = jpy.get_type('org.esa.snap.core.datamodel.PixelPos')
 
 from keras.datasets import mnist
 from keras.models import Model
