@@ -1,1 +1,1 @@
-start /WAIT /b python Neural_Terra-i_Train.py
+start /WAIT /b python Neural_Terra-i_Train.py %1 %2 %3 %4 %5

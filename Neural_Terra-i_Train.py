@@ -24,10 +24,10 @@ import pandas as pd
 
 from keras.datasets import mnist
 from keras.models import Model
-from keras.layers.core import Dense, Dropout, Flatten
+from keras.layers.core import Dense, Dropout, Flatten, Reshape
 #from tensorflow.keras.optimizers import RMSprop
 from keras.utils import np_utils
-from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D
+from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, SeparableConv2D
 from keras.layers import Input, BatchNormalization
 from sklearn import metrics as me
 from scipy import stats
@@ -37,7 +37,9 @@ from sklearn.preprocessing import Normalizer
 
 import tensorflow as tf
 
-def getProductList(path, search):
+import sys
+
+def getProductList(path, search, permutations):
 
     products = []
 
@@ -47,10 +49,11 @@ def getProductList(path, search):
     nbFiles = len(files)
     nbFilesDone = 0
 
-    for f in files:
+    for index in permutations:
+
         print("LOADING DATA - X : " + str(nbFilesDone) + "/" + str(nbFiles) + " - (" + str("{:.2f}".format(nbFilesDone / nbFiles * 100)) + "%)")
 
-        temp = np.load(f)
+        temp = np.load(files[index])
         products.append(temp['arr_0'])
 
         nbFilesDone += 1
@@ -60,7 +63,7 @@ def getProductList(path, search):
 
     return products
 
-def getProductList2(path, search):
+def getProductList2(path, search, permutations):
 
     products = []
 
@@ -69,9 +72,11 @@ def getProductList2(path, search):
     nbFiles = len(folders)
     nbFilesDone = 0
 
-    for pathF in folders:
+    for index in permutations:
 
         print("LOADING DATA - Y : " + str(nbFilesDone) + "/" + str(nbFiles) + " - (" + str("{:.2f}".format(nbFilesDone / nbFiles * 100)) + "%)")
+
+        pathF = folders[index]
 
         for pathF2 in os.listdir(path + "/" + pathF):
 
@@ -86,21 +91,53 @@ def getProductList2(path, search):
 
     return products
 
-def getProductFileList(path, search):
+def getIndicesPermutation(path, search):
 
     lbs_input_path = os.path.join(path, search)
     files = glob.glob(lbs_input_path)
 
-    return files
+    p = np.random.permutation(len(files))
+
+    return p
+
+def createModel():
+
+    # Create model
+
+    l0 = Input(shape=(50, 50, 7), name='l0')
+    l0_n = BatchNormalization()(l0)
+
+    l1 = Conv2D(7, (5, 5), padding='same', activation='relu', name='l1')(l0_n)
+
+    l2 = Conv2D(1, (3, 3), padding='same', activation='sigmoid', name='l2')(l1)
+
+    flat = Flatten(name='flat')(l2)
+
+    l3 = Dense(2500, activation='relu', name='l3')(flat)
+
+    l4 = Reshape((50, 50, 1), name='l4')(l3)
+
+    model = Model(inputs=l0, outputs=l4)
+    model.compile(loss='mean_absolute_percentage_error', optimizer='RMSprop', metrics=['mean_absolute_percentage_error'])
+
+    return model
+
 print("-------------------------------------------")
 
-subsetStarts = getProductList(folderStart, '*.npz')
+batch_size = int(sys.argv[1])
+n_epoch = int(sys.argv[2])
+initial_epoch = int(sys.argv[3])
+nbEpochBetweenSave = int(sys.argv[4])
+readModel = int(sys.argv[5])
+
+permutations = getIndicesPermutation(folderStart, '*.npz')
+
+subsetStarts = getProductList(folderStart, '*.npz', permutations)
 
 if bandTrained == "VV":
-
-    Y = getProductList2(folderResult, 'VV.npz')
+    Y = getProductList2(folderResult, 'VV.npz', permutations)
 else:
-    Y = getProductList2(folderResult, 'VH.npz')
+    Y = getProductList2(folderResult, 'VH.npz', permutations)
 
 X = []
 
@@ -168,57 +205,50 @@ X_test = np.swapaxes(X_test, 2, 3)
 Y_train = Y_train.reshape(len(Y_train), len(Y_train[0]), len(Y_train[0][0]), 1).astype('float32')
 Y_test = Y_test.reshape(len(Y_test), len(Y_test[0]), len(Y_test[0][0]), 1).astype('float32')
 
-# Create model
+# Create or read model
 
-#l0 = Input(shape=(height, width, 9), name='l0')
+model = None
+#historyFull = {}
 
-#l0 = Input(shape=(len(subsetResults[0]), len(subsetResults[0][0]), 7), name='l0')
-
-l0 = Input(shape=(50, 50, 7), name='l0')
-l0_n = BatchNormalization()(l0)
-
-l1 = Conv2D(7, (5, 5), padding='same', activation='relu', name='l1')(l0_n)
-l1_mp = MaxPooling2D((2, 2), name='l1_mp')(l1)
-
-l2 = Conv2D(7, (3, 3), padding='same', activation='relu', name='l2')(l1_mp)
-#l2_mp = MaxPooling2D((5, 5), name='l2_mp')(l2)
-
-#l22 = Conv2D(14, (5, 5), padding='same', activation='relu', name='l22')(l2)
-
-l3 = Conv2D(7, (5, 5), padding='same', activation='relu', name='l3')(l2)
-l3_us = UpSampling2D((2, 2))(l3)
-
-l4 = Conv2D(1, (5, 5), padding='same', activation='relu', name='l4')(l3_us)
-l4_us = UpSampling2D((2, 2))(l4)
-
-l45 = Conv2D(1, (3, 3), padding='same', activation='relu', name='l45')(l4_us)
-l45_mp = MaxPooling2D(pool_size=(2, 2), name='l45_mp')(l45)
-
-l5 = Conv2D(1, (5, 5), padding='same', activation='relu', name='l5')(l45_mp)
-
-#flat = Flatten(name='flat')(l4_us)
-
-#l5 = Dense((250, 250), activation='relu', name='l5')(flat)
-
-#l5 = Dense(n_classes, activation='softmax', name='l5')(l4)
-
-print("TRAINING START...")
-
-model = Model(inputs=l0, outputs=l5)
-model.summary()
+if readModel == 1:
+    model = tf.keras.models.load_model(historyModelPath + "/model.h5")
+    #historyFull = pd.read_csv(historyModelPath + "/history.csv").to_dict()
+else:
+    model = createModel()
 
 # Train model
 
-batch_size = 1024
-n_epoch = 1
+print("TRAINING START...")
+model.summary()
 
-#model.compile(loss='categorical_crossentropy', optimizer=RMSprop(), metrics=['accuracy'])
-model.compile(loss='mean_absolute_percentage_error', optimizer='RMSprop', metrics=['mean_absolute_percentage_error'])
-history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=n_epoch, verbose=1, validation_data=(X_test, Y_test), use_multiprocessing=True)
+nbEpochDone = initial_epoch
+nbEpochToBeDone = initial_epoch + nbEpochBetweenSave
 
-f = open(historyModelPath + "/history.csv", "w+")
-f.close()
+while(nbEpochDone < n_epoch):
+
+    print("TRAINING : (" + str(nbEpochDone) + " -> " + str(nbEpochToBeDone) + ") / " + str(n_epoch))
+
+    history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=nbEpochToBeDone, initial_epoch=nbEpochDone, verbose=1, validation_data=(X_test, Y_test), use_multiprocessing=False)
+
+    # create file for history
+    historyPath = historyModelPath + "/history_" + str(nbEpochDone) + "-" + str(nbEpochToBeDone - 1) + ".csv"
+
+    f = open(historyPath, "w+")
+    f.close()
+
+    #historyFull += history.history
+
+    # Save history and model
+    pd.DataFrame.from_dict(history.history).to_csv(historyPath, index=False)
+    model.save(historyModelPath + "/model_" + str(nbEpochToBeDone) + ".h5")
+
+    nbEpochDone = nbEpochToBeDone
+    nbEpochToBeDone += nbEpochBetweenSave
+
+    print("-------------------------------------------")
 
 # Save history and model
-pd.DataFrame.from_dict(history.history).to_csv(historyModelPath + "/history.csv", index=False)
+#pd.DataFrame.from_dict(historyFull).to_csv(historyModelPath + "/history.csv", index=True)
 model.save(historyModelPath + "/model.h5")
+
+print("TRAINING DONE !")
