@@ -107,17 +107,25 @@ def createModel():
     l0 = Input(shape=(50, 50, 7), name='l0')
     l0_n = BatchNormalization()(l0)
 
-    l1 = Conv2D(7, (5, 5), padding='same', activation='relu', name='l1')(l0_n)
+    l1 = Conv2D(7, (5, 5), padding='same', activation='tanh', name='l1')(l0_n)
 
-    l2 = Conv2D(1, (3, 3), padding='same', activation='sigmoid', name='l2')(l1)
+    l2 = Conv2D(7, (3, 3), padding='same', activation='relu', name='l2')(l1)
+    l2_pad = layers.ZeroPadding2D(padding=(2, 2))(l2)
 
-    flat = Flatten(name='flat')(l2)
+    l3 = layers.LocallyConnected2D(14, (5, 5), activation='relu', name='l3')(l2_pad)
 
-    l3 = Dense(2500, activation='relu', name='l3')(flat)
+    l4 = Conv2D(7, (3, 3), padding='same', activation='selu', name='l4')(l3)
 
-    l4 = Reshape((50, 50, 1), name='l4')(l3)
+    l5 = Conv2D(14, (3, 3), padding='same', activation='softmax', name='l5')(l4)
+    l5_pad = layers.ZeroPadding2D(padding=(2, 2))(l5)
 
-    model = Model(inputs=l0, outputs=l4)
+    l6 = layers.LocallyConnected2D(7, (5, 5), activation='relu', name='l6')(l5_pad)
+    l6_pad = layers.ZeroPadding2D(padding=(1, 1))(l6)
+
+    l7 = layers.LocallyConnected2D(1, (3, 3), activation='relu', name='l7')(l6_pad)
+
+    model = Model(inputs=l0, outputs=l7)
+    model.summary()
     model.compile(loss='mean_absolute_percentage_error', optimizer='RMSprop', metrics=['mean_absolute_percentage_error'])
 
     return model
