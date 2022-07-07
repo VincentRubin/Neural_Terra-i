@@ -108,24 +108,11 @@ def createModel():
     l0_n = BatchNormalization()(l0)
 
     l1 = Conv2D(7, (5, 5), padding='same', activation='tanh', name='l1')(l0_n)
+    l1_pad = layers.ZeroPadding2D(padding=(2, 2))(l1)
 
-    l2 = Conv2D(7, (3, 3), padding='same', activation='relu', name='l2')(l1)
-    l2_pad = layers.ZeroPadding2D(padding=(2, 2))(l2)
+    l2 = layers.LocallyConnected2D(1, (5, 5), activation='relu', name='l2')(l1_pad)
 
-    l3 = layers.LocallyConnected2D(14, (5, 5), activation='relu', name='l3')(l2_pad)
-
-    l4 = Conv2D(7, (3, 3), padding='same', activation='selu', name='l4')(l3)
-
-    l5 = Conv2D(14, (3, 3), padding='same', activation='softmax', name='l5')(l4)
-    l5_pad = layers.ZeroPadding2D(padding=(2, 2))(l5)
-
-    l6 = layers.LocallyConnected2D(7, (5, 5), activation='relu', name='l6')(l5_pad)
-    l6_pad = layers.ZeroPadding2D(padding=(1, 1))(l6)
-
-    l7 = layers.LocallyConnected2D(1, (3, 3), activation='relu', name='l7')(l6_pad)
-
-    model = Model(inputs=l0, outputs=l7)
-    model.summary()
+    model = Model(inputs=l0, outputs=l2)
     model.compile(loss='mean_absolute_percentage_error', optimizer='RMSprop', metrics=['mean_absolute_percentage_error'])
 
     return model
